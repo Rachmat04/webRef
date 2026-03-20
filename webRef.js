@@ -916,13 +916,25 @@ window.webRef.getRef = (function () {
 
 
 	function makeRefName(title) {
-		const words = title.trim().split(/\s+/);
+		const cleanTitle = title.trim().replace(/\s+/g, ' ');
+		const words = cleanTitle.split(' ');
 		const firstWord = words[0] || '';
-		const midIndex = Math.floor(words.length / 2);
+		const midIndex = (words.length % 2 === 0) ? (words.length / 2) : Math.floor(words.length / 2);
 		const middleWord = words[midIndex] || '';
 		const lastWord = words[words.length - 1] || '';
-		return domain + '_' + firstWord + '_' + middleWord + '_' + lastWord;
-}
+		const wordBased = firstWord + '_' + middleWord + '_' + lastWord;
+		
+		if (wordBased.length > 20) {
+			const noSpace = cleanTitle.replace(/\s+/g, '');
+			const firstPart = noSpace.slice(0, 5);
+			const midIndexChar = Math.floor(noSpace.length / 2) - 2;
+			const middlePart = noSpace.slice(midIndexChar, midIndexChar + 5);
+			const lastPart = noSpace.slice(-5);
+			return domain + '_' + firstPart + '_' + middlePart + '_' + lastPart;
+			} else {
+			return domain + '_' + wordBased;
+		}
+	}
 	
 	
 	function getSelectedText() {
