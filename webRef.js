@@ -1042,7 +1042,7 @@ window.webRef.getRef = (function () {
 
 		const cleanUrl = location.origin + location.pathname;
 
-		codeTextArea.value = '<ref name="' + makeRefName(title) + '">{{'
+		codeTextArea.value = '<ref>{{'
 			+ tp.templateName
 			+ '\n' + barV + tp.title + eqV + title
 			+ (!lang || lang == langToIgnore ? '' : '\n' + barV + tp.transTitle + eqV) // translated title
@@ -1054,7 +1054,7 @@ window.webRef.getRef = (function () {
 			+ (publisher ? barV + tp.publisher + eqV + publisher + '\n' : '')
 			+ langParam
 			+ quote
-			+ '\n}}</ref>\n';
+			+ '\n}}</ref>';
 
 		document.body.scrollTop = document.documentElement.scrollTop = 0;
 	}
