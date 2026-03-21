@@ -676,11 +676,12 @@ window.webRef.getRef = (function () {
 				id: 'refName',
 				onclick: function () {
 					var val, oldVal = codeTextArea.value;
-					val = oldVal.replace(/^<ref name="[^"]*"/, '<ref');
+					var refName = makeRefName(document.title); 
+					val = oldVal.replace(/^<ref name="[^"]*"/, '<ref name="' + refName + '"');
 					if (val == oldVal)
-						val = val.replace(/^<ref/, '<ref name=""');
+						val = val.replace(/^<ref/, '<ref name="' + refName + '"');
 					codeTextArea.value = val;
-				}
+					}
 			},
 			{
 				id: 'singleMultiLineButton',
