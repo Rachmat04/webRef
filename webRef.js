@@ -610,7 +610,7 @@ window.webRef.getRef = (function () {
 			);
 		}
 
-		codeTextArea.value = val + '\n';
+		codeTextArea.value = val;
 	}
 
 
