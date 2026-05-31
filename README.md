@@ -1,122 +1,367 @@
-# webRef
+# WebRef
 
-A tool designed to generate templated references for use on Wikipedia, simplifying the process of citing sources within articles. This gadget streamlines the creation of common reference formats, enhancing efficiency for Wikipedia editors.
+**WebRef** is a browser-based JavaScript tool that generates Wikipedia `{{Cite web}}` references from web pages. It automatically extracts article metadata, formats it into a citation template, and displays the result in a floating toolbar for quick copying and use on Wikipedia.
 
-## 🌟 Key Features & Benefits
+The script was originally based on WebRef by V111P and has been adapted for use on the Indonesian Wikipedia.
 
-*   **Templated References:** Automatically generates references in standard Wikipedia citation templates, ensuring consistency and correctness.
-*   **Wikipedia Integration:** Specifically built to function within the Wikipedia environment, likely as a user script or gadget.
-*   **Efficiency:** Reduces the manual effort involved in formatting citations, allowing editors to focus more on content.
-*   **Client-Side:** Runs directly in your browser, providing immediate reference generation without server-side interaction.
+## Overview
 
-## 🚀 Installation & Setup Instructions
+WebRef analyses the current web page and attempts to collect information such as:
 
-This tool is designed as a client-side JavaScript gadget for Wikipedia. To install `webRef`, you typically add it to your personal JavaScript file on Wikipedia (e.g., `common.js` or `vector.js`).
+- Article title
+- Publication date
+- Author name(s)
+- Website name
+- Publisher
+- Language code
+- Canonical URL
 
-**Prerequisites:**
+The collected data is then converted into a ready-to-use Wikipedia citation.
 
-*   An active Wikipedia account.
-*   Familiarity with editing your personal JavaScript pages on Wikipedia.
+Example output:
 
-**Installation Steps:**
-
-1.  **Navigate to your personal JavaScript page on Wikipedia:**
-    *   For most users, this is `Special:MyPage/common.js`. If you use a specific skin like Vector, you might also have `Special:MyPage/vector.js`.
-
-2.  **Add the `webRef` script:**
-    Copy and paste the following lines into your `common.js` (or equivalent) page. This will load both the main `webRef` script and its setup/configuration script.
-
-    ```javascript
-    // Load webRef main script
-    mw.loader.load('//en.wikipedia.org/w/index.php?title=User:Rachmat04/webRef.js&action=raw&ctype=text/javascript', 'text/javascript');
-
-    // Load webRefSetup script (essential for configuration and UI)
-    // Note: The original webRefSetup is located at en.wikipedia.org/wiki/User:V111P/js/webRefSetup.js
-    // You might need to adjust this URL if you have a local copy or a different setup script.
-    mw.loader.load('//en.wikipedia.org/w/index.php?title=User:V111P/js/webRefSetup.js&action=raw&ctype=text/javascript', 'text/javascript');
-    ```
-
-    *   **Important Note:** The provided `webRef.js` file relies on `webRefSetup.js` from `User:V111P` on English Wikipedia. Ensure this URL is accessible and the script is compatible with your local Wikipedia project. If you plan to host your own `webRefSetup.js`, update the second `mw.loader.load` line accordingly.
-
-3.  **Save your JavaScript page.**
-
-4.  **Bypass your browser's cache** to ensure the new script loads.
-    *   **Firefox / Chrome:** Ctrl-Shift-R (Windows, Linux) or Cmd-Shift-R (macOS)
-    *   **Internet Explorer:** Ctrl-F5
-    *   **Safari:** Cmd-R
-
-After these steps, `webRef` should be active and available for use on Wikipedia pages.
-
-## 💻 Usage Examples
-
-`webRef` works by providing a function, `window.webRef.getRef`, which is likely called by the `webRefSetup.js` script to present a user interface or generate references based on user input.
-
-While `webRef.js` itself doesn't expose a direct user interface, it provides the core logic. The typical usage flow, mediated by `webRefSetup.js`, might involve:
-
-1.  **Clicking a button or gadget link** in the Wikipedia editing toolbar or sidebar.
-2.  **Filling out a form** with details like the source URL, title, author, publication date, etc.
-3.  **Generating the templated reference** which is then automatically inserted into the edit box.
-
-For advanced users or developers, you might interact with the core function directly (though this is typically handled by `webRefSetup`):
-
-```javascript
-// Example of how webRef.getRef might be called internally
-// This is illustrative and depends on how webRefSetup.js utilizes it.
-(function() {
-    'use strict';
-    // Assume input parameters for reference generation
-    var refParameters = {
-        url: 'https://example.com/article',
-        title: 'An Example Article',
-        author: 'John Doe',
-        publisher: 'Example Publishing',
-        date: '2023-10-27'
-        // ... other parameters
-    };
-
-    if (window.webRef && typeof window.webRef.getRef === 'function') {
-        var generatedReference = window.webRef.getRef(refParameters);
-        console.log('Generated Reference:', generatedReference);
-        // This `generatedReference` would then be inserted into the Wikipedia edit summary.
-    } else {
-        console.warn('webRef.getRef is not available.');
-    }
-})();
+```wikitext
+<ref>{{Cite web
+| title = Example article
+| last = Smith | first = John
+| work = Example News
+| date = 31 May 2026
+| access-date = 31 May 2026
+| url = https://example.com/article
+| language = en
+}}</ref>
 ```
 
-## ⚙️ Configuration Options
+---
 
-Configuration for `webRef` is primarily handled by the `webRefSetup.js` script. This external script is responsible for:
+## Main features
 
-*   Defining the user interface elements (buttons, forms).
-*   Setting default values or options for reference generation.
-*   Specifying which templates to use (e.g., `{{cite web}}`, `{{cite news}}`).
-*   Potentially customising output formats.
+### Automatic metadata extraction
 
-Users who wish to modify the behavior or appearance of `webRef` should look into the source code of `webRefSetup.js` or create their own customized version. The `window.webRef` object is used for communication, so it might accept initial configuration via its properties.
+WebRef searches multiple metadata standards commonly used on websites:
 
-## 🤝 Contributing Guidelines
+- Open Graph (`og:title`, `og:site_name`, etc.)
+- Twitter Card metadata
+- Schema.org microdata
+- Dublin Core metadata
+- Citation metadata
+- Standard HTML meta tags
+- Page title and headings
 
-We welcome contributions to `webRef`! If you have suggestions for improvements, bug fixes, or new features, please follow these guidelines:
+This allows it to work on many news sites, blogs, and online publications without manual configuration.
 
-1.  **Fork the repository:** Start by forking the `webRef` repository to your GitHub account.
-2.  **Create a new branch:** For each new feature or bug fix, create a new branch from `main` (e.g., `feature/add-new-template`, `fix/bug-in-parsing`).
-3.  **Make your changes:** Implement your changes in the new branch.
-4.  **Test your changes:** Ensure your modifications do not introduce new issues and work as expected within the Wikipedia environment.
-5.  **Submit a Pull Request (PR):**
-    *   Provide a clear and concise description of your changes.
-    *   Reference any relevant issues.
-    *   Ensure your code adheres to JavaScript best practices and is well-commented.
+### Citation template generation
 
-For reporting bugs or suggesting features, please open an issue in the GitHub repository.
+The script automatically builds a complete `{{Cite web}}` template using the extracted information.
 
-## 📄 License
+Supported parameters include:
 
-The license for this project has **not been specified**.
-Until a license is explicitly stated, all rights are reserved by the copyright holder, Rachmat04.
+- `title`
+- `trans-title`
+- `author`
+- `last`
+- `first`
+- `work`
+- `date`
+- `access-date`
+- `url`
+- `publisher`
+- `language`
+- `quote`
 
-## 🙏 Acknowledgments
+### Author formatting
 
-This project is inspired by and directly uses code from:
+Author names can be automatically converted into Wikipedia citation format.
 
-*   **User:V111P/js/WebRef** on English Wikipedia, which serves as the original source for the core functionality and the associated `webRefSetup.js` script.
+Example:
+
+```text
+John Smith
+```
+
+becomes:
+
+```wikitext
+| last = Smith
+| first = John
+```
+
+Multiple authors are also supported.
+
+### Date formatting
+
+Dates can be converted between:
+
+- DMY (Day Month Year)
+- MDY (Month Day Year)
+- YMD (Year Month Day)
+
+Example:
+
+```text
+31 May 2026
+2026-05-31
+05/31/2026
+```
+
+### Quote support
+
+If text is selected on the web page before running WebRef, the selected text can be inserted into the citation's `quote` parameter.
+
+### One-click copy
+
+Generated citations can be:
+
+- Copied directly to the clipboard
+- Selected automatically
+- Converted into a compact single-line format before copying
+
+### Reference name generator
+
+WebRef can automatically generate reference names based on:
+
+- Website domain
+- Article title
+- Current time
+
+Example:
+
+```wikitext
+<ref name="example.com_ArticleTit_123456">
+```
+
+### Site-Ssecific configuration
+
+The script supports custom extraction rules for individual websites.
+
+Configuration data can be:
+
+- Loaded from local storage
+- Saved to local storage
+- Imported temporarily
+- Shared between pages on the same domain
+
+---
+
+## User interface
+
+When activated, WebRef displays a toolbar at the top of the page.
+
+Available controls include:
+
+| Button | Function |
+|----------|----------|
+| Compact & Copy | Converts citation to compact format and copies it |
+| Compact & Select | Converts citation to compact format and selects it |
+| Authors | Formats author names |
+| DMY | Formats dates as Day Month Year |
+| YMD | Formats dates as Year Month Day |
+| RefName | Generates a reference name |
+| Horiz./Vertical | Switches between horizontal and vertical template layout |
+| Reload | Re-scans the page |
+| Close | Hides the toolbar |
+| Site setup | Opens site configuration tools |
+
+---
+
+## Supported metadata sources
+
+### Title
+
+WebRef checks sources such as:
+
+```html
+<meta property="og:title">
+<meta name="twitter:title">
+<meta name="citation_title">
+<title>
+<h1>
+```
+
+### Date
+
+WebRef checks sources such as:
+
+```html
+<meta itemprop="datePublished">
+<meta property="article:published_time">
+<meta name="citation_date">
+<meta name="DC.date">
+```
+
+### Author
+
+WebRef checks sources such as:
+
+```html
+<meta itemprop="author">
+<meta property="article:author">
+<meta name="citation_author">
+<meta name="DC.creator">
+```
+
+### Site name
+
+WebRef checks sources such as:
+
+```html
+<meta property="og:site_name">
+<meta name="application-name">
+<meta name="citation_publisher">
+```
+
+### Language
+
+WebRef checks sources such as:
+
+```html
+<html lang="en">
+<meta itemprop="inLanguage">
+<meta name="citation_language">
+```
+
+---
+
+## Localisation
+
+The script is designed to be localised for different Wikipedias.
+
+Localisable elements include:
+
+- Month names
+- Language codes
+- User interface text
+- Date formats
+- Citation parameter names
+- Author separators
+
+The source code contains comments marked:
+
+```javascript
+// LOCALIZE
+```
+
+These indicate areas that should be modified when adapting the script for another language community.
+
+---
+
+## Site configuration system
+
+WebRef includes a configuration tool that helps create extraction rules for websites that do not expose metadata consistently.
+
+The setup interface allows users to:
+
+1. Open an article page.
+2. Search for article title, date, and author text.
+3. Select matching page elements.
+4. Generate extraction code.
+5. Save settings locally.
+
+Configuration is stored in the browser's local storage.
+
+---
+
+## Warnings and validation
+
+WebRef can display warnings when:
+
+### Ambiguous dates
+
+Example:
+
+```text
+05/06/2026
+```
+
+The script may not know whether this means:
+
+```text
+5 June 2026
+```
+
+or
+
+```text
+6 May 2026
+```
+
+A warning is shown so the citation can be checked manually.
+
+### Quote inserted
+
+If selected text is added to the `quote` parameter, a warning indicator is displayed.
+
+---
+
+## Browser storage
+
+WebRef uses browser local storage to save site-specific settings.
+
+Stored information may include:
+
+- Site extraction rules
+- Language settings
+- Publisher information
+- Author formatting preferences
+
+If local storage is unavailable, site-specific configuration cannot be saved.
+
+---
+
+## Limitations
+
+- Metadata quality depends on the website.
+- Some websites may not expose publication dates or authors.
+- Author names may require manual correction.
+- Dynamically generated content may not always be detected.
+- Ambiguous numeric dates may require verification.
+- Site-specific configuration may be needed for some websites.
+
+---
+
+## Compatibility
+
+WebRef is designed to run in modern web browsers that support:
+
+- JavaScript
+- DOM APIs
+- Local Storage
+- JSON
+- Clipboard commands
+
+Older browsers may not support all features.
+
+---
+
+## Privacy
+
+WebRef runs entirely within the user's browser.
+
+The script:
+
+- Does not send citation data to external servers.
+- Does not upload page content.
+- Stores site configuration locally in the browser.
+
+---
+
+## License
+
+This script is adapted from the original WebRef project created by V111P.
+
+Check the original source and local project documentation for licensing information before redistributing or modifying the code.
+
+---
+
+## Disclaimer
+
+This script is provided as-is.
+
+There is no warranty regarding:
+
+- Accuracy of extracted metadata
+- Correctness of generated citations
+- Compatibility with all websites
+- Availability of future updates
+
+Users should review generated citations before publishing them on Wikipedia or other Wikimedia projects.
